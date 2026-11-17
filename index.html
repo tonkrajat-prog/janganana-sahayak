@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>जनगणना सहायक — Census 2027 Family Helper</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#e8771e">
+<style>
+:root{--o:#e8771e;--o2:#fff4ea;--g:#15803d;--g2:#dcfce7;--r:#dc2626;--r2:#fee2e2;--b:#1e293b;--mut:#64748b;--line:#e2e8f0;--bg:#f5f6f8}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Devanagari","Nirmala UI","Mangal",sans-serif;background:var(--bg);color:var(--b);font-size:15px;-webkit-text-size-adjust:100%}
+header{position:sticky;top:0;z-index:30;background:#fff;border-bottom:3px solid var(--o);display:flex;align-items:center;gap:8px;padding:8px 12px}
+header .t{font-weight:800;flex:1;line-height:1.15;cursor:pointer}
+header .t small{display:block;font-weight:500;color:var(--mut);font-size:11px}
+main{max-width:900px;margin:0 auto;padding:12px 12px 96px}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;margin:0 0 12px}
+.card h3{margin:0 0 10px;font-size:15px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.card h3 .sub{font-weight:500;color:var(--mut);font-size:12.5px}
+.f{margin:0 0 12px}
+.lb{display:block;font-size:13px;font-weight:650;margin:0 0 6px}
+.lb .q{display:inline-block;min-width:26px;color:var(--o);font-weight:800}
+.lb .hi{color:var(--mut);font-weight:500}
+.f.miss>.lb::after{content:" ●";color:var(--r);font-size:10px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:7px 12px;font-size:13.5px;cursor:pointer;line-height:1.15;text-align:left;color:var(--b);font-family:inherit}
+.chip small{display:block;font-size:11px;color:var(--mut)}
+.chip.on{background:var(--o);border-color:var(--o);color:#fff}
+.chip.on small{color:#ffe9d6}
+.chip.on.auto{background:#fde3cc;border-color:var(--o);color:#7c2d12;border-style:dashed}
+.chip.on.auto small{color:#9a3412}
+.inp{display:flex;gap:6px}
+input.tx{flex:1;min-width:0;width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;font-size:16px;background:#fff;font-family:inherit;color:var(--b)}
+input.tx:focus{outline:none;border-color:var(--o)}
+input.tx.auto{border-style:dashed;background:#fffaf5}
+.mic{flex:0 0 44px;border:1.5px solid var(--line);border-radius:10px;background:#fff;font-size:18px;cursor:pointer}
+.mic.rec{background:var(--r);border-color:var(--r);animation:pl 1s infinite}
+@keyframes pl{50%{opacity:.55}}
+.btn{border:0;border-radius:10px;padding:11px 14px;font-weight:700;font-size:14px;cursor:pointer;background:#e9edf2;color:var(--b);font-family:inherit;text-decoration:none;display:inline-block}
+.btn.primary{background:var(--o);color:#fff}
+.btn.green{background:var(--g);color:#fff}
+.btn.red{background:var(--r2);color:var(--r)}
+.btn.sm{padding:7px 10px;font-size:13px}
+.btn.ghost{background:#fff;border:1.5px solid var(--line)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+@media(max-width:600px){.grid2{grid-template-columns:1fr}}
+.wide{grid-column:1/-1}
+.warn{font-size:12.5px;color:var(--r);margin-top:4px}
+.okm{font-size:12.5px;color:var(--g);margin-top:4px}
+.note{font-size:12.5px;color:var(--mut);line-height:1.45}
+.badge{font-size:11px;font-weight:800;border-radius:999px;padding:3px 8px;background:var(--r2);color:var(--r);white-space:nowrap}
+.badge.ok{background:var(--g2);color:var(--g)}
+.item{display:flex;align-items:center;gap:10px;padding:11px 4px;border-bottom:1px solid var(--line);cursor:pointer}
+.item:last-child{border-bottom:0}
+.item .nm{font-weight:700}
+.item .sub{font-size:12.5px;color:var(--mut)}
+.grow{flex:1;min-width:0}
+.tabs{position:sticky;top:55px;z-index:20;background:var(--bg);padding:6px 0 8px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin}
+.tabs a{flex:0 0 auto;text-decoration:none;font-size:12.5px;font-weight:700;border-radius:999px;padding:7px 11px;background:#fff;border:1.5px solid var(--line);color:var(--b);white-space:nowrap}
+.tabs a.cur{background:var(--o);border-color:var(--o);color:#fff}
+.tabs a .dot{display:inline-block;min-width:18px;padding:1px 5px;border-radius:9px;background:var(--r2);color:var(--r);font-size:11px;margin-left:4px;text-align:center}
+.tabs a .dot.ok{background:var(--g2);color:var(--g)}
+.tabs a.cur .dot{background:#fff}
+.mhead{display:flex;align-items:center;gap:8px;margin:0 0 10px;padding-bottom:8px;border-bottom:1px dashed var(--line)}
+.mhead .nm{font-weight:800;font-size:15px}
+.mhead .sub{font-size:12px;color:var(--mut)}
+.av{width:30px;height:30px;border-radius:50%;background:var(--o2);color:var(--o);display:flex;align-items:center;justify-content:center;font-weight:800;flex:0 0 30px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:var(--o2);border-radius:12px;padding:10px;text-align:center}
+.stat b{display:block;font-size:22px;color:var(--o)}
+.stat span{font-size:11.5px}
+.quick{display:flex;flex-wrap:wrap;gap:6px}
+.pv .r{display:grid;grid-template-columns:44px 1fr 1.25fr;gap:8px;padding:7px 0;border-bottom:1px dashed var(--line);align-items:center;font-size:13.5px}
+.pv .r .q{color:var(--o);font-weight:800}
+.pv .v{font-weight:700;cursor:pointer;background:#f8fafc;border:1px solid var(--line);border-radius:8px;padding:6px 8px;word-break:break-word}
+.pv .v:hover{border-color:var(--o)}
+.pv .v.na{font-weight:500;color:var(--mut);cursor:default}
+.bottombar{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:8px 12px;display:flex;gap:8px;justify-content:center;z-index:25}
+.bottombar .btn{flex:1;max-width:280px}
+#toast{position:fixed;left:50%;bottom:76px;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;transition:.25s;pointer-events:none;z-index:99;max-width:92vw;text-align:center}
+#toast.show{opacity:1}
+.tip{background:#fffbeb;border-color:#fde68a}
+.legend{display:inline-block;width:14px;height:14px;border-radius:4px;border:1.5px dashed var(--o);background:#fde3cc;vertical-align:-2px}
+#print{display:none}
+@media print{
+ body.printing header,body.printing main,body.printing .bottombar,body.printing #toast{display:none!important}
+ body.printing #print{display:block}
+ @page{size:A4 portrait;margin:10mm}
+}
+#print h2{font-size:14px;margin:0 0 4px}
+#print .meta{font-size:10.5px;margin:0 0 6px}
+#print table{border-collapse:collapse;width:100%;font-size:9.5px;margin-bottom:8px;page-break-after:always}
+#print td,#print th{border:1px solid #555;padding:2px 4px;vertical-align:top}
+#print th{background:#eee}
+#print .pg{page-break-after:always}
+#print .pg table{font-size:10.5px;page-break-after:auto}
+#print .pg tr{page-break-inside:avoid}
+#print .meta span{display:inline-block;margin:0 12px 3px 0}
+#print .who{font-size:15px;font-weight:800;margin:6px 0}
+#print .who small{font-weight:500;font-size:12px}
+#print .en{font-size:8.5px;color:#555}
+#print .qn{text-align:center;font-weight:700}
+#print .ans{font-weight:700}
+#print .sig{display:flex;justify-content:space-between;margin-top:22px;font-size:11px}
+
+</style>
+</head>
+<body>
+<header>
+  <div class="t" data-act="home">जनगणना सहायक<small>Census 2027 · परिवार अनुसूची — विकसित: साक्षी (Developed by Sakshi)</small></div>
+  <button class="btn sm ghost" data-act="voicelang" id="vl" title="Voice language">🎤 EN</button>
+</header>
+<main id="app"></main>
+<div id="bb"></div>
+<div id="print"></div>
+<div id="toast"></div>
+<datalist id="dl-members"></datalist>
+<datalist id="dl-langs"><option>Hindi</option><option>English</option><option>Urdu</option><option>Punjabi</option><option>Sanskrit</option><option>Bengali</option><option>Bhojpuri</option><option>Haryanvi</option><option>Gujarati</option><option>Marathi</option><option>Nepali</option><option>Tamil</option><option>Telugu</option><option>Malayalam</option><option>Kannada</option><option>Odia</option><option>Sindhi</option></datalist>
+<datalist id="dl-states"><option>Uttar Pradesh</option><option>Delhi</option><option>Uttarakhand</option><option>Haryana</option><option>Punjab</option><option>Rajasthan</option><option>Madhya Pradesh</option><option>Bihar</option><option>Jharkhand</option><option>Himachal Pradesh</option><option>Jammu and Kashmir</option><option>Ladakh</option><option>Chandigarh</option><option>Gujarat</option><option>Maharashtra</option><option>West Bengal</option><option>Odisha</option><option>Chhattisgarh</option><option>Assam</option><option>Andhra Pradesh</option><option>Telangana</option><option>Karnataka</option><option>Kerala</option><option>Tamil Nadu</option><option>Goa</option><option>Sikkim</option><option>Arunachal Pradesh</option><option>Nagaland</option><option>Manipur</option><option>Mizoram</option><option>Tripura</option><option>Meghalaya</option><option>Puducherry</option><option>Lakshadweep</option><option>Andaman and Nicobar Islands</option><option>Dadra and Nagar Haveli and Daman and Diu</option></datalist>
+<datalist id="dl-dist"><option>Meerut</option><option>Ghaziabad</option><option>Hapur</option><option>Baghpat</option><option>Muzaffarnagar</option><option>Shamli</option><option>Saharanpur</option><option>Bulandshahr</option><option>Gautam Buddha Nagar</option><option>Bijnor</option><option>Moradabad</option><option>Amroha</option><option>Rampur</option><option>Sambhal</option><option>Aligarh</option><option>Mathura</option><option>Agra</option><option>Bareilly</option><option>Badaun</option><option>Lucknow</option><option>Kanpur Nagar</option><option>Prayagraj</option><option>Varanasi</option><option>Gorakhpur</option></datalist>
+
+<script>
+'use strict';
+/* ================= storage ================= */
+const LS='jg27_census_helper_v1';
+const $=s=>document.querySelector(s);
+const app=$('#app');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const blank=()=>({households:[],settings:{voiceLang:'en-IN',lastBackup:null}});
+function load(){try{const d=JSON.parse(localStorage.getItem(LS));if(d&&Array.isArray(d.households)){d.settings=d.settings||{voiceLang:'en-IN'};return d}}catch(e){}return blank()}
+let DB=load();
+function save(){try{localStorage.setItem(LS,JSON.stringify(DB))}catch(e){toast('⚠ सेव नहीं हुआ — तुरंत बैकअप लें')}}
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('show'),2800)}
+const empty=v=>v===undefined||v===null||v===''||(Array.isArray(v)&&!v.length);
+
+/* ================= option lists (portal wording + Hindi) ================= */
+const YN=[['Yes','हाँ'],['No','नहीं']];
+const REL=[['Head','मुखिया'],['Wife/Husband','पत्नी/पति'],['Son/Daughter','पुत्र/पुत्री'],['Son-in-law/Daughter-in-law','दामाद/बहू'],['Grandchild','पोता/पोती/नाती'],['Father/Mother','पिता/माता'],['Brother/Sister','भाई/बहन'],['Father-in-law/Mother-in-law','ससुर/सास'],['Brother-in-law/Sister-in-law','देवर/साला/भाभी'],['Other relative','अन्य संबंधी'],['Non-relative','असंबंधी']];
+const SEX=[['Male','पुरुष'],['Female','स्त्री'],['Transgender','ट्रांसजेंडर']];
+const MAR=[['Never Married','अविवाहित'],['Currently Married','विवाहित'],['Widowed','विधवा/विधुर'],['Separated','संबंध-विच्छेदित'],['Divorced','तलाकशुदा']];
+const NAT=[['Indian','भारतीय'],['Other','अन्य']];
+const RELIG=[['Hindu','हिन्दू'],['Muslim','मुस्लिम'],['Christian','ईसाई'],['Sikh','सिख'],['Buddhist','बौद्ध'],['Jain','जैन'],['Other','अन्य']];
+const CASTEOPT=[['Does not want to declare Caste','जाति नहीं बताना चाहते'],['No Caste','कोई जाति नहीं']];
+const INOUT=[['Within India','भारत में'],['Outside India','भारत से बाहर']];
+const DIS=[['Seeing','देखने में'],['Hearing','सुनने में'],['Speech','बोलने में'],['Movement','चलने-फिरने में'],['Intellectual','बौद्धिक'],['Mental illness','मानसिक रोग'],['Acid attack victim','एसिड हमला'],['Neurological','तंत्रिका तंत्र रोग'],['Blood disorder','रक्त विकार']];
+const LIT=[['Literate','साक्षर'],['Illiterate','निरक्षर']];
+const ATT=[['Attending','अभी पढ़ रहे'],['Not Attending','नहीं पढ़ रहे']];
+const ATTT=[['School','स्कूल'],['College','कॉलेज'],['Vocational institute','व्यावसायिक संस्थान'],['Professional institute','पेशेवर संस्थान'],['Special school for disabled','दिव्यांग विशेष स्कूल'],['Literacy centre','साक्षरता केंद्र'],['Other','अन्य']];
+const NATT=[['Attended Before','पहले पढ़ाई की'],['Never Attended','कभी नहीं पढ़े']];
+const EDU=[['Pre-primary','पूर्व प्राथमिक'],['Class 1-12','कक्षा 1–12'],['ITI','आई.टी.आई.'],['Diploma/Certificate','डिप्लोमा/प्रमाणपत्र'],['Graduate','स्नातक'],['PG Diploma','स्नातकोत्तर डिप्लोमा'],['Masters/ Postgraduate','स्नातकोत्तर'],['M.Phil','एम.फिल.'],['Doctorate & above','डॉक्टरेट']];
+const STREAM=[['Arts/Humanities','कला'],['Science','विज्ञान'],['Commerce','वाणिज्य'],['Engineering','अभियांत्रिकी'],['IT/Computer','कंप्यूटर'],['Language','भाषा'],['Medicine','चिकित्सा'],['Education','शिक्षा'],['Management','प्रबंधन'],['Law','विधि'],['Agriculture','कृषि'],['Other','अन्य']];
+const WMAIN='Main worker (6 months or more)';
+const WST=[[WMAIN,'दीर्घकालिक — 6 माह या अधिक'],['Marginal worker (3 to less than 6 months)','अल्पकालिक — 3 से 6 माह'],['Marginal worker (less than 3 months)','अल्पकालिक — 3 माह से कम']];
+const CAT=[['Cultivator','काश्तकार'],['Agricultural labourer','खेतिहर मजदूर'],['Household industry','पारिवारिक उद्योग'],['Services activities','सेवा'],['Trade/Business','व्यापार'],['Manufacturing/Industry','उद्योग/विनिर्माण'],['Construction','निर्माण'],['Other','अन्य']];
+const CLS=[['Employer','मालिक'],['Single worker','एकल कर्मचारी'],['Employee','कर्मचारी'],['Family worker','पारिवारिक कर्मचारी']];
+const NEC=[['Student','विद्यार्थी'],['Household duties','गृह कार्य'],['Dependent','आश्रित'],['Pensioner','पेंशन भोगी'],['Rentier','किराया भोगी'],['Other','अन्य']];
+const SEEK=[['Yes - Full time work','हाँ — पूर्णकालिक'],['Yes - Part time work','हाँ — अंशकालिक'],['No','नहीं']];
+const MODE=[['On foot','पैदल'],['Bicycle','साइकिल'],['Moped / Scooter / Motor Cycle','मोपेड/स्कूटर/बाइक'],['Car / Jeep / Van','कार/जीप/वैन'],['Tempo / Auto / Taxi','टेम्पो/ऑटो/टैक्सी'],['Bus','बस'],['Train / Metro / Rail','ट्रेन/मेट्रो'],['Water transport','जल परिवहन'],['Other','अन्य'],['No travel','यात्रा नहीं']];
+const RU=[['Rural','ग्रामीण'],['Urban','नगरीय']];
+const REASON=[['Work/Employment','कामकाज/रोजगार'],['Business','व्यापार'],['Education','शिक्षा'],['Marriage','विवाह'],['Moved after birth','जन्म के पश्चात'],['Moved with household','परिवार के साथ'],['Natural calamity','प्राकृतिक आपदा'],['Other','अन्य']];
+const HHTYPE=[['Normal','सामान्य'],['Institutional','संस्थागत'],['Houseless','आवासहीन']];
+const STATUS=[['Collected','डेटा लिया'],['Entered online','ऑनलाइन भरा'],['Submitted','सबमिट']];
+/* one-tap "what do they do" → fills Q18–Q24 together */
+const OQ=[
+ ['Govt / Private job','सरकारी/प्राइवेट नौकरी',{work:'Yes',wst:WMAIN,cat:'Services activities',cls:'Employee'}],
+ ['Own shop / business','अपनी दुकान/व्यापार',{work:'Yes',wst:WMAIN,cat:'Trade/Business',cls:'Single worker'}],
+ ['Farmer','किसान (अपनी/पट्टे की ज़मीन)',{work:'Yes',wst:WMAIN,cat:'Cultivator',occ:'Farmer',cls:'Single worker'}],
+ ['Farm labourer','खेतिहर मजदूर',{work:'Yes',wst:WMAIN,cat:'Agricultural labourer',occ:'Agricultural labourer',cls:'Employee'}],
+ ['Labour / daily wage','मजदूरी/दिहाड़ी',{work:'Yes',wst:WMAIN,cls:'Employee',occ:'Labourer'}],
+ ['Household industry','घरेलू उद्योग',{work:'Yes',wst:WMAIN,cat:'Household industry',cls:'Family worker'}],
+ ['Housewife','गृहिणी/गृह कार्य',{work:'No',nec:'Household duties',seek:'No'}],
+ ['Student','विद्यार्थी',{work:'No',nec:'Student',seek:'No'}],
+ ['Retired / pensioner','सेवानिवृत्त/पेंशन',{work:'No',nec:'Pensioner',seek:'No'}],
+ ['Dependent','आश्रित (बुज़ुर्ग/बच्चा/बीमार)',{work:'No',nec:'Dependent',seek:'No'}],
+ ['Unemployed, looking for work','बेरोज़गार — काम की तलाश',{work:'No',nec:'Other',seek:'Yes - Full time work'}],
+ ['Other','अन्य',{}]];
+const OQMAP=Object.fromEntries(OQ.map(x=>[x[0],x[2]]));
+
+/* ================= helpers ================= */
+function dobOk(s){const m=/^(\d{2})-(\d{2})-(\d{4})$/.exec(s||'');if(!m)return false;const d=+m[1],mo=+m[2],y=+m[3];const dt=new Date(y,mo-1,d);return dt.getFullYear()===y&&dt.getMonth()===mo-1&&dt.getDate()===d&&dt<=new Date()&&y>1890}
+function ageFromDob(s){const[d,mo,y]=s.split('-').map(Number);const t=new Date();let a=t.getFullYear()-y;if(t.getMonth()+1<mo||(t.getMonth()+1===mo&&t.getDate()<d))a--;return a}
+function ageOf(m){if(dobOk(m.dob))return ageFromDob(m.dob);const a=parseInt(m.age,10);return isNaN(a)?null:a}
+const EM=m=>!!m.mar&&m.mar!=='Never Married';
+const FEM=m=>m.sex==='Female';
+const WK=m=>m.work==='Yes';
+const MARG=m=>WK(m)&&String(m.wst||'').startsWith('Marginal');
+const AGE7=m=>{const a=ageOf(m);return a===null||a>=7};
+const NOWORK=m=>m.work==='No'||MARG(m);
+const VD=[[0,1,2,3,4,5,6,7,8,9],[1,2,3,4,0,6,7,8,9,5],[2,3,4,0,1,7,8,9,5,6],[3,4,0,1,2,8,9,5,6,7],[4,0,1,2,3,9,5,6,7,8],[5,9,8,7,6,0,4,3,2,1],[6,5,9,8,7,1,0,4,3,2],[7,6,5,9,8,2,1,0,4,3],[8,7,6,5,9,3,2,1,0,4],[9,8,7,6,5,4,3,2,1,0]];
+const VP=[[0,1,2,3,4,5,6,7,8,9],[1,5,7,6,2,8,3,0,9,4],[5,8,0,3,7,9,6,1,4,2],[8,9,1,6,0,4,3,5,2,7],[9,4,5,3,1,2,6,8,7,0],[4,2,8,6,5,7,3,9,0,1],[2,7,9,3,8,0,6,4,1,5],[7,0,4,6,9,1,3,2,5,8]];
+function aadhaarOk(s){if(!/^[2-9]\d{11}$/.test(s||''))return false;let c=0;const a=s.split('').reverse().map(Number);for(let i=0;i<a.length;i++)c=VD[c][VP[i%8][a[i]]];return c===0}
+const fmtDate=v=>{const d=v.replace(/\D/g,'').slice(0,8);return d.length>4?d.slice(0,2)+'-'+d.slice(2,4)+'-'+d.slice(4):d.length>2?d.slice(0,2)+'-'+d.slice(2):d};
+const titleCase=s=>s.replace(/\b[a-z]/g,c=>c.toUpperCase());
+const MON={january:1,february:2,march:3,april:4,may:5,june:6,july:7,august:8,september:9,october:10,november:11,december:12,jan:1,feb:2,mar:3,apr:4,jun:6,jul:7,aug:8,sep:9,sept:9,oct:10,nov:11,dec:12,'जनवरी':1,'फरवरी':2,'फ़रवरी':2,'मार्च':3,'अप्रैल':4,'मई':5,'जून':6,'जुलाई':7,'अगस्त':8,'सितंबर':9,'सितम्बर':9,'अक्टूबर':10,'नवंबर':11,'नवम्बर':11,'दिसंबर':12,'दिसम्बर':12};
+function parseSpokenDate(t){t=t.toLowerCase();let mo=null;for(const w of t.split(/[^a-z\u0900-\u097f]+/)){if(MON[w]){mo=MON[w];break}}
+ const n=(t.match(/\d+/g)||[]).map(Number);let d,y;
+ if(mo){d=n.find(x=>x>=1&&x<=31);y=n.find(x=>x>=1900)}
+ else if(n.length>=3){[d,mo,y]=n}
+ else if(n.length===1&&String(n[0]).length===8){const s=String(n[0]);d=+s.slice(0,2);mo=+s.slice(2,4);y=+s.slice(4)}
+ if(!d||!mo||!y)return null;const r=String(d).padStart(2,'0')+'-'+String(mo).padStart(2,'0')+'-'+y;return dobOk(r)?r:null}
+const DIGW={zero:0,oh:0,one:1,two:2,three:3,four:4,for:4,five:5,six:6,seven:7,eight:8,nine:9,'शून्य':0,'एक':1,'दो':2,'तीन':3,'चार':4,'पांच':5,'पाँच':5,'छह':6,'छः':6,'सात':7,'आठ':8,'नौ':9};
+function wordsToDigits(t){const w=t.toLowerCase().split(/\s+/);let out='';for(let i=0;i<w.length;i++){const x=w[i];if((x==='double'||x==='triple')&&i+1<w.length){const nx=w[i+1];const dg=/^\d$/.test(nx)?nx:(DIGW[nx]!==undefined?String(DIGW[nx]):'');if(dg){out+=dg.repeat(x==='double'?2:3);i++;continue}}if(DIGW[x]!==undefined)out+=DIGW[x];else out+=x.replace(/\D/g,'')}return out}
+
+/* ================= question schema (portal order) ================= */
+const notMem=P=>m=>m[P+'Mem']!=='Yes';
+function parentFields(P,q,en,hi){return[
+ {k:P+'Mem',s:2,q:q,l:en+' is a member of this household?',h:hi+' इसी परिवार में हैं?',t:'chips',o:YN},
+ {k:P+'Name',s:2,q:q+'a',l:en+"'s name",h:hi+' का नाम',dl:'members',cap:1,req:0},
+ {k:P+'Dob',s:2,q:q+'b',l:en+"'s date of birth",h:'जन्म तिथि',t:'date',req:0,show:notMem(P)},
+ {k:P+'Pob',s:2,q:q+'c',l:'Place of birth',h:'जन्म स्थान',t:'chips',o:INOUT,req:0,show:notMem(P)},
+ {k:P+'State',s:2,l:'State',h:'राज्य',dl:'states',req:0,show:m=>notMem(P)(m)&&m[P+'Pob']==='Within India'},
+ {k:P+'Dist',s:2,l:'District',h:'जिला',dl:'dist',req:0,show:m=>notMem(P)(m)&&m[P+'Pob']==='Within India'},
+ {k:P+'Vill',s:2,l:'Village/Town (with locality)',h:'गाँव/नगर',req:0,show:m=>notMem(P)(m)&&m[P+'Pob']==='Within India'},
+ {k:P+'Country',s:2,l:'Country',h:'देश',req:0,show:m=>notMem(P)(m)&&m[P+'Pob']==='Outside India'},
+ {k:P+'Relig',s:2,q:q+'d',l:'Religion',h:'धर्म',t:'chips',o:RELIG,req:0,show:notMem(P)}]}
+const CAME=m=>m.came==='Yes';
+const PERM=m=>m.rel==='Head'||m.permSame==='No';
+const FA=m=>FEM(m)&&EM(m), FC=m=>FEM(m)&&m.mar==='Currently Married';
+const F=[
+ {k:'name',s:0,q:'1',l:'Name',h:'नाम',cap:1},
+ {k:'rel',s:0,q:'2',l:'Relationship to head',h:'मुखिया से संबंध',t:'chips',o:REL},
+ {k:'sex',s:0,q:'3',l:'Sex',h:'लिंग',t:'chips',o:SEX},
+ {k:'dob',s:0,q:'4a',l:'Date of birth',h:'जन्म तिथि (DD-MM-YYYY)',t:'date',req:0},
+ {k:'age',s:0,q:'4b',l:'Age in completed years (if DOB not known)',h:'आयु पूर्ण वर्षों में',t:'num',show:m=>!dobOk(m.dob)},
+ {k:'mar',s:0,q:'5',l:'Current marital status',h:'वैवाहिक स्थिति',t:'chips',o:MAR},
+ {k:'mage',s:0,q:'6',l:'Age at marriage',h:'विवाह के समय आयु',t:'num',show:EM},
+ {k:'spouse',s:1,q:'7',l:'Spouse name',h:'पति/पत्नी का नाम',dl:'members',cap:1,show:m=>m.mar==='Currently Married'},
+ {k:'nat',s:1,q:'8',l:'Nationality',h:'राष्ट्रीयता',t:'chips',o:NAT},
+ {k:'natO',s:1,q:'8',l:'Specify nationality',h:'देश',show:m=>m.nat==='Other'},
+ {k:'relig',s:1,q:'9',l:'Religion',h:'धर्म',t:'chips',o:RELIG},
+ {k:'religO',s:1,q:'9',l:'Specify other religion',h:'अन्य धर्म',show:m=>m.relig==='Other'},
+ {k:'sc',s:1,q:'10a',l:'Scheduled Caste (SC)?',h:'अनुसूचित जाति?',t:'chips',o:YN},
+ {k:'st',s:1,q:'10b',l:'Scheduled Tribe (ST)?',h:'अनुसूचित जनजाति?',t:'chips',o:YN},
+ {k:'casteOpt',s:1,q:'10c',l:'Tick only if applicable',h:'केवल लागू होने पर',t:'chips',o:CASTEOPT,req:0,show:m=>m.sc==='No'&&m.st==='No'},
+ {k:'caste',s:1,q:'10c',l:'Caste name (if not SC/ST)',h:'जाति का नाम',cap:1,show:m=>m.sc==='No'&&m.st==='No'&&!m.casteOpt},
+ ...parentFields('f','11','Father','पिता'),
+ ...parentFields('m','12','Mother','माता'),
+ {k:'dis',s:3,q:'13a',l:'Any disability?',h:'कोई दिव्यांगता?',t:'chips',o:YN},
+ {k:'disT',s:3,q:'13b',l:'Type of disability (max 3)',h:'प्रकार (अधिकतम 3)',t:'multi',max:3,o:DIS,show:m=>m.dis==='Yes'},
+ {k:'mt',s:4,q:'14a',l:'Mother tongue',h:'मातृभाषा',dl:'langs',cap:1},
+ {k:'l1',s:4,q:'14b',l:'Other language 1',h:'अन्य भाषा 1',dl:'langs',cap:1,req:0},
+ {k:'l2',s:4,q:'14c',l:'Other language 2',h:'अन्य भाषा 2',dl:'langs',cap:1,req:0},
+ {k:'lit',s:4,q:'15a',l:'Literacy (7 years & above)',h:'साक्षरता',t:'chips',o:LIT,show:AGE7},
+ {k:'dig',s:4,q:'15b',l:'Digitally literate?',h:'डिजिटल साक्षर?',t:'chips',o:YN,show:AGE7},
+ {k:'att',s:4,q:'16',l:'Attending educational institution?',h:'अभी पढ़ाई कर रहे?',t:'chips',o:ATT},
+ {k:'attT',s:4,q:'16',l:'Type of institution',h:'संस्थान',t:'chips',o:ATTT,show:m=>m.att==='Attending'},
+ {k:'natt',s:4,q:'16',l:'Attendance status',h:'स्थिति',t:'chips',o:NATT,show:m=>m.att==='Not Attending'},
+ {k:'edu',s:4,q:'17a',l:'Highest educational level attained',h:'उच्चतम शिक्षा',t:'chips',o:EDU,show:m=>!(m.att==='Not Attending'&&m.natt==='Never Attended')},
+ {k:'eduCls',s:4,q:'17a',l:'Class passed (if asked)',h:'कौन सी कक्षा',t:'num',req:0,show:m=>m.edu==='Class 1-12'},
+ {k:'stream',s:4,q:'17b',l:'Stream / discipline',h:'संकाय/विषय',t:'chips',o:STREAM,show:m=>!!m.edu&&m.edu!=='Pre-primary'&&!(m.att==='Not Attending'&&m.natt==='Never Attended')},
+ {k:'oq',s:5,q:'★',l:'What does this person do? (one tap fills Q18–24)',h:'क्या काम करते हैं?',t:'chips',o:OQ.map(x=>[x[0],x[1]]),req:0,portal:0},
+ {k:'work',s:5,q:'18',l:'Worked any time during last year?',h:'पिछले वर्ष कोई काम किया?',t:'chips',o:YN},
+ {k:'wst',s:5,q:'18',l:'Work status',h:'काम की अवधि',t:'chips',o:WST,show:WK},
+ {k:'cat',s:5,q:'19',l:'Category of economic activity',h:'आर्थिक कार्यकलाप की श्रेणी',t:'chips',o:CAT,show:WK},
+ {k:'occ',s:5,q:'20',l:'Occupation (search this word in portal)',h:'व्यवसाय — जैसे Teacher, Clerk, Shopkeeper',cap:1,show:WK},
+ {k:'ind',s:5,q:'21',l:'Nature of industry, trade or service',h:'उद्योग/सेवा — जैसे Primary education, Retail trade',cap:1,show:WK},
+ {k:'cls',s:5,q:'22',l:'Class of worker',h:'काम का वर्ग',t:'chips',o:CLS,show:WK},
+ {k:'nec',s:5,q:'23',l:'Non-economic activity',h:'गैर-आर्थिक कार्यकलाप',t:'chips',o:NEC,show:NOWORK},
+ {k:'seek',s:5,q:'24',l:'Seeking or available for work?',h:'काम की तलाश में?',t:'chips',o:SEEK,show:NOWORK},
+ {k:'dist',s:5,q:'25a',l:'One-way distance to work (km)',h:'कार्यस्थल की दूरी (कि.मी.)',t:'num',dec:1,show:WK},
+ {k:'tH',s:5,q:'25a',l:'Travel time — hours',h:'समय — घंटे',t:'num',show:WK},
+ {k:'tM',s:5,q:'25a',l:'Travel time — minutes',h:'समय — मिनट',t:'num',show:WK},
+ {k:'mode',s:5,q:'25b',l:'Mode of travel to work',h:'यात्रा का साधन',t:'chips',o:MODE,show:WK},
+ {k:'bOut',s:6,q:'26',l:'Born outside this village/town?',h:'इस गाँव/नगर से बाहर जन्म?',t:'chips',o:YN},
+ {k:'bPob',s:6,q:'26',l:'Born where?',h:'कहाँ जन्म?',t:'chips',o:INOUT,show:m=>m.bOut==='Yes'},
+ {k:'bState',s:6,l:'State',h:'राज्य',dl:'states',show:m=>m.bOut==='Yes'&&m.bPob==='Within India'},
+ {k:'bDist',s:6,l:'District',h:'जिला',dl:'dist',show:m=>m.bOut==='Yes'&&m.bPob==='Within India'},
+ {k:'bVill',s:6,l:'Village/Town (with locality)',h:'गाँव/नगर',cap:1,show:m=>m.bOut==='Yes'&&m.bPob==='Within India'},
+ {k:'bCountry',s:6,l:'Country',h:'देश',show:m=>m.bOut==='Yes'&&m.bPob==='Outside India'},
+ {k:'came',s:6,q:'27',l:'Came to this village/town from elsewhere?',h:'कहीं और से आकर बसे?',t:'chips',o:YN},
+ {k:'lPob',s:6,q:'27a',l:'Place of last residence',h:'पूर्व निवास',t:'chips',o:INOUT,show:CAME},
+ {k:'lState',s:6,l:'State',h:'राज्य',dl:'states',show:m=>CAME(m)&&m.lPob==='Within India'},
+ {k:'lDist',s:6,l:'District',h:'जिला',dl:'dist',show:m=>CAME(m)&&m.lPob==='Within India'},
+ {k:'lVill',s:6,l:'Village/Town (with locality)',h:'गाँव/नगर',cap:1,show:m=>CAME(m)&&m.lPob==='Within India'},
+ {k:'lCountry',s:6,l:'Country',h:'देश',show:m=>CAME(m)&&m.lPob==='Outside India'},
+ {k:'lRU',s:6,q:'27b',l:'At the time of migration',h:'उस समय',t:'chips',o:RU,show:CAME},
+ {k:'reason',s:6,q:'28',l:'Reason for migration',h:'स्थान परिवर्तन का कारण',t:'chips',o:REASON,show:CAME},
+ {k:'dur',s:6,q:'29',l:'Years of stay here since migration',h:'यहाँ कितने वर्ष से',t:'num',show:CAME},
+ {k:'permSame',s:6,q:'30',l:'Permanent address same as head?',h:'स्थायी पता मुखिया के समान?',t:'chips',o:YN,show:m=>m.rel!=='Head'},
+ {k:'pState',s:6,q:'30',l:'State',h:'राज्य',dl:'states',show:PERM},
+ {k:'pDist',s:6,q:'30',l:'District',h:'जिला',dl:'dist',show:PERM},
+ {k:'pTown',s:6,q:'30',l:'Town/Village',h:'नगर/गाँव',cap:1,show:PERM},
+ {k:'pHouse',s:6,q:'30',l:'House number & locality',h:'मकान नं. व मोहल्ला',show:PERM},
+ {k:'f31d',s:7,q:'31',l:'Children surviving now — Daughters',h:'वर्तमान जीवित — पुत्री',t:'num',show:FA},
+ {k:'f31s',s:7,q:'31',l:'Children surviving now — Sons',h:'वर्तमान जीवित — पुत्र',t:'num',show:FA},
+ {k:'f32d',s:7,q:'32',l:'Children ever born alive — Daughters',h:'कभी जीवित पैदा — पुत्री',t:'num',show:FA},
+ {k:'f32s',s:7,q:'32',l:'Children ever born alive — Sons',h:'कभी जीवित पैदा — पुत्र',t:'num',show:FA},
+ {k:'f33d',s:7,q:'33',l:'Born alive in last one year — Daughters',h:'पिछले एक वर्ष में — पुत्री',t:'num',show:FC},
+ {k:'f33s',s:7,q:'33',l:'Born alive in last one year — Sons',h:'पिछले एक वर्ष में — पुत्र',t:'num',show:FC},
+ {k:'cov',s:8,q:'34',l:'Covid-19 vaccination taken?',h:'कोविड टीका लगा?',t:'chips',o:YN},
+ {k:'covP',s:8,q:'34',l:'Place of vaccination',h:'टीका कहाँ लगा',t:'chips',o:INOUT,show:m=>m.cov==='Yes'},
+ {k:'covState',s:8,l:'State',h:'राज्य',dl:'states',show:m=>m.cov==='Yes'&&m.covP==='Within India'},
+ {k:'covDist',s:8,l:'District',h:'जिला',dl:'dist',show:m=>m.cov==='Yes'&&m.covP==='Within India'},
+ {k:'covCountry',s:8,l:'Country',h:'देश',show:m=>m.cov==='Yes'&&m.covP==='Outside India'},
+ {k:'bank',s:8,q:'35',l:'Total number of bank accounts',h:'बैंक खातों की संख्या',t:'num'},
+ {k:'mobY',s:8,q:'36',l:'Mobile number available?',h:'मोबाइल नंबर है?',t:'chips',o:YN},
+ {k:'mob',s:8,q:'36',l:'Mobile number',h:'मोबाइल नंबर',num:1,max:10,show:m=>m.mobY!=='No'},
+ {k:'aadY',s:8,q:'37',l:'Aadhaar number available?',h:'आधार नंबर है?',t:'chips',o:YN},
+ {k:'aad',s:8,q:'37',l:'Aadhaar number',h:'आधार नंबर (12 अंक)',num:1,max:12,show:m=>m.aadY!=='No'},
+ {k:'voterY',s:8,q:'38',l:'Voter ID available?',h:'वोटर आईडी है?',t:'chips',o:YN},
+ {k:'voter',s:8,q:'38',l:'Voter ID number',h:'वोटर आईडी नंबर',up:1,show:m=>m.voterY!=='No'},
+ {k:'passY',s:8,q:'39',l:'Indian passport holder?',h:'पासपोर्ट है?',t:'chips',o:YN},
+ {k:'pass',s:8,q:'39',l:'Passport number',h:'पासपोर्ट नंबर',up:1,show:m=>m.passY!=='No'},
+ {k:'dlY',s:8,q:'40',l:'Driving licence available?',h:'ड्राइविंग लाइसेंस है?',t:'chips',o:YN}];
+const FK=Object.fromEntries(F.map(f=>[f.k,f]));
+/* fields that are only required once their Yes/No is Yes */
+const NEEDY={mob:'mobY',aad:'aadY',voter:'voterY',pass:'passY'};
+const STEPS=[['मूल विवरण','Add Member (Q1–6)'],['सामान्य जानकारी','General Info (Q7–10)'],['पारिवारिक विवरण','Household Info (Q11–12)'],['दिव्यांगता','Disability (Q13)'],['शिक्षा व भाषा','Education & Language (Q14–17)'],['आर्थिक गतिविधि','Economic Activity (Q18–25)'],['प्रवास','Migration (Q26–30)'],['प्रजनन','Fertility (Q31–33)'],['अन्य विवरण','Other Particulars (Q34–40)']];
+
+/* household-level fields */
+const HF=[
+ {k:'houseNo',l:'House no.',h:'मकान संख्या',req:0},
+ {k:'hhNo',l:'Household no.',h:'परिवार क्रमांक',req:0},
+ {k:'bldgNo',l:'Building no.',h:'भवन संख्या',req:0},
+ {k:'ward',l:'Ward',h:'वार्ड',req:0},
+ {k:'eb',l:'EB / enumeration block',h:'गणना ब्लॉक',req:0},
+ {k:'town',l:'Village/Town',h:'गाँव/नगर',cap:1,req:0},
+ {k:'district',l:'District',h:'जिला',dl:'dist',req:0},
+ {k:'state',l:'State',h:'राज्य',dl:'states',req:0},
+ {k:'address',l:'House no. & locality (address)',h:'पता — मकान नं. व मोहल्ला',req:0,wide:1},
+ {k:'loginMob',l:'Mobile for OTP login',h:'OTP वाला मोबाइल नंबर',num:1,max:10,req:0},
+ {k:'hhType',l:'Type of household',h:'परिवार का प्रकार',t:'chips',o:HHTYPE,req:0,wide:1}];
+const HD=[
+ {k:'relig',l:'Religion of the family',h:'परिवार का धर्म',t:'chips',o:RELIG},
+ {k:'sc',l:'Scheduled Caste (SC)?',h:'अनुसूचित जाति?',t:'chips',o:YN},
+ {k:'st',l:'Scheduled Tribe (ST)?',h:'अनुसूचित जनजाति?',t:'chips',o:YN},
+ {k:'casteOpt',l:'Tick only if applicable',h:'केवल लागू होने पर',t:'chips',o:CASTEOPT,req:0,show:h=>h.sc==='No'&&h.st==='No'},
+ {k:'caste',l:'Caste name',h:'जाति का नाम',cap:1,show:h=>h.sc==='No'&&h.st==='No'&&!h.casteOpt},
+ {k:'mt',l:'Mother tongue (whole family)',h:'मातृभाषा',dl:'langs',cap:1},
+ {k:'l1',l:'Other language known (most members)',h:'अन्य भाषा — न हो तो खाली छोड़ें',dl:'langs',cap:1,req:0},
+ {k:'native',l:'Is the head’s family native to this village/town?',h:'क्या मुखिया का परिवार यहीं का मूल निवासी है? (हाँ = बेटे-बेटियाँ यहीं जन्मे)',t:'chips',o:YN},
+ {k:'disNone',l:'Nobody in the family has a disability?',h:'परिवार में किसी को दिव्यांगता नहीं? (हाँ = सबके लिए "नहीं")',t:'chips',o:YN},
+ {k:'covAdults',l:'All members aged 15+ took Covid vaccine (in this district)?',h:'15+ आयु वाले सभी को कोविड टीका लगा (इसी जिले में)?',t:'chips',o:YN}];
+const PROP=['relig','sc','st','caste','casteOpt','mt','l1'];
+
+/* interview rounds: family-wise, question-group-wise */
+const ROUNDS=[
+ {t:'1. कौन किसका',e:'Family list — who is who',keys:['name','rel','sex','dob','age','mar','mage','spouse'],roster:1},
+ {t:'2. सबके लिए एक बार',e:'Asked once for whole family',family:1,keys:['dis','disT']},
+ {t:'3. आधार व पहचान',e:'Aadhaar, mobile, IDs, bank, Covid',keys:['aadY','aad','mobY','mob','voterY','voter','passY','pass','dlY','bank','cov','covP','covState','covDist','covCountry']},
+ {t:'4. पढ़ाई',e:'Education (literacy fills itself)',keys:['att','attT','natt','edu','eduCls','stream','lit','dig','l2']},
+ {t:'5. काम-धंधा',e:'Work — one tap fills Q18–24',keys:['oq','work','wst','cat','occ','ind','cls','nec','seek','dist','tH','tM','mode']},
+ {t:'6. जन्म व प्रवास',e:'Birth place & migration',keys:F.filter(f=>f.s===6).map(f=>f.k)},
+ {t:'7. माता-पिता',e:'Parents (auto-linked)',keys:F.filter(f=>f.s===2).map(f=>f.k)},
+ {t:'8. महिलाएँ',e:'Fertility — only applicable women',keys:F.filter(f=>f.s===7).map(f=>f.k)},
+ {t:'9. बाकी जाँच',e:'Anything still missing',pending:1}];
+
+/* ================= visibility / pending ================= */
+const vis=(f,o)=>!f.show||f.show(o);
+function isPending(f,m){if(f.req===0||!vis(f,m))return false;if(f.k==='age'&&dobOk(m.dob))return false;if(NEEDY[f.k]&&m[NEEDY[f.k]]!=='Yes')return false;return empty(m[f.k])}
+const pendingOf=(m,keys)=>F.filter(f=>(!keys||keys.includes(f.k))&&isPending(f,m));
+const hhPending=hh=>hh.members.reduce((a,m)=>a+pendingOf(m).length,0);
+function roundPending(hh,r){if(r.pending)return hhPending(hh);let n=hh.members.reduce((a,m)=>a+pendingOf(m,r.keys).length,0);if(r.family)n+=HD.filter(f=>f.req!==0&&vis(f,hh)&&empty(hh[f.k])).length;return n}
+function warnFor(f,o){const v=o[f.k];if(empty(v))return'';
+ if(f.t==='date')return dobOk(v)?`<div class="okm">आयु: ${ageFromDob(v)} वर्ष</div>`:'<div class="warn">तिथि सही नहीं — DD-MM-YYYY</div>';
+ if(f.k==='aad')return aadhaarOk(v)?'<div class="okm">✓ आधार नंबर सही (checksum ठीक)</div>':'<div class="warn">⚠ यह आधार नंबर सही नहीं लग रहा — कार्ड से दोबारा मिलाएँ</div>';
+ if(f.k==='mob'||f.k==='loginMob')return/^[6-9]\d{9}$/.test(v)?'':'<div class="warn">⚠ मोबाइल नंबर 10 अंक का होना चाहिए</div>';
+ if(f.k==='voter')return/^[A-Z]{3}\d{7}$/.test(v)?'':'<div class="warn">आम तौर पर 3 अक्षर + 7 अंक (जैसे ABC1234567) — जाँच लें</div>';
+ if(f.k==='mage'){const a=ageOf(o);if(a!==null&&+v>a)return'<div class="warn">⚠ विवाह की आयु वर्तमान आयु से अधिक</div>';if(+v<18&&FEM(o)||+v<21&&o.sex==='Male')return'<div class="note">कम आयु — एक बार पुष्टि कर लें</div>'}
+ if(f.k==='f31d'&&+v>+(o.f32d||0)&&!empty(o.f32d))return'<div class="warn">⚠ जीवित पुत्री, कुल जन्मी पुत्रियों से अधिक</div>';
+ if(f.k==='f31s'&&+v>+(o.f32s||0)&&!empty(o.f32s))return'<div class="warn">⚠ जीवित पुत्र, कुल जन्मे पुत्रों से अधिक</div>';
+ if(f.k==='dur'){const a=ageOf(o);if(a!==null&&+v>a)return'<div class="warn">⚠ अवधि आयु से अधिक</div>'}
+ return''}
+
+/* ================= smart defaults (recomputed every change; only fill empty, user values win) ================= */
+function smart(hh){
+ const head=hh.members.find(m=>m.rel==='Head');
+ const sp=hh.members.find(m=>m.rel==='Wife/Husband');
+ const par=hh.members.filter(m=>m.rel==='Father/Mother');
+ const sons=hh.members.filter(m=>m.rel==='Son/Daughter'&&m.sex==='Male'&&m.mar==='Currently Married');
+ const dils=hh.members.filter(m=>m.rel==='Son-in-law/Daughter-in-law'&&m.sex==='Female');
+ for(const m of hh.members){
+  m._a=m._a||{};m._x=m._x||{};
+  for(const k in m._a){delete m[k]}
+  m._a={};
+  const def=(k,v)=>{if(empty(m[k])&&!m._x[k]&&!empty(v)){m[k]=v;m._a[k]=1}};
+  const a=ageOf(m);
+  def('nat','Indian');
+  for(const k of PROP)def(k,hh[k]);
+  if(m.rel!=='Head')def('permSame','Yes');
+  else{def('pState',hh.state);def('pDist',hh.district);def('pTown',hh.town);def('pHouse',hh.address)}
+  if(hh.disNone==='Yes')def('dis','No');
+  if(a!==null&&a<15)def('mar','Never Married');
+  if(m.rel==='Wife/Husband'){def('mar','Currently Married');if(head)def('spouse',head.name)}
+  if(m.rel==='Head'&&sp)def('spouse',sp.name);
+  if(m.rel==='Son/Daughter'&&m.sex==='Male'&&sons.length===1&&dils.length===1&&m===sons[0])def('spouse',dils[0].name);
+  if(m.rel==='Son-in-law/Daughter-in-law'&&FEM(m)){def('mar','Currently Married');if(sons.length===1&&dils.length===1)def('spouse',sons[0].name)}
+  const setPar=(P,p)=>{if(p&&p.name){def(P+'Mem','Yes');if(m[P+'Mem']==='Yes')def(P+'Name',p.name)}};
+  if(m.rel==='Son/Daughter'){const two=[head,sp].filter(Boolean);setPar('f',two.find(x=>x.sex==='Male'));setPar('m',two.find(x=>x.sex==='Female'))}
+  if(m.rel==='Head'||m.rel==='Brother/Sister'){setPar('f',par.find(x=>x.sex==='Male'));setPar('m',par.find(x=>x.sex==='Female'))}
+  if(m.rel==='Grandchild'&&sons.length===1&&dils.length===1){setPar('f',sons[0]);setPar('m',dils[0])}
+  if(['Wife/Husband','Son-in-law/Daughter-in-law','Non-relative','Father/Mother','Father-in-law/Mother-in-law'].includes(m.rel)){def('fMem','No');def('mMem','No')}
+  if(m.rel==='Head'&&!par.length){def('fMem','No');def('mMem','No')}
+  for(const P of['f','m'])if(m[P+'Mem']!=='Yes'){def(P+'Relig',m.relig)}
+  /* migration */
+  const marriedIn=FEM(m)&&['Wife/Husband','Son-in-law/Daughter-in-law'].includes(m.rel)||(FEM(m)&&m.rel==='Father/Mother'&&hh.native==='Yes');
+  if(marriedIn){def('bOut','Yes');def('came','Yes');if(m.came==='Yes'){def('reason','Marriage');def('lRU',hh.ru)}}
+  const nativeRel=['Head','Son/Daughter','Grandchild','Brother/Sister'].includes(m.rel)||(m.rel==='Father/Mother'&&m.sex==='Male');
+  if(hh.native==='Yes'&&nativeRel){def('bOut','No');def('came','No')}
+  if(m.came==='Yes'&&m.reason==='Marriage'&&EM(m)&&!empty(m.mage)&&a!==null)def('dur',String(Math.max(0,a-(+m.mage))));
+  if(m.came==='Yes'&&m.bOut==='Yes'&&m.reason==='Marriage'){def('lPob',m.bPob);def('lState',m.bState);def('lDist',m.bDist);def('lVill',m.bVill);def('lCountry',m.bCountry)}
+  for(const P of['b','l'])if(m[P==='b'?'bOut':'came']==='Yes'){def(P+'Pob','Within India');if(m[P+'Pob']==='Within India')def(P+'State',hh.state)}
+  /* work */
+  if(m.oq&&OQMAP[m.oq]){const mp=OQMAP[m.oq];for(const k in mp)def(k,mp[k])}
+  if(a!==null&&a<15){def('work','No');if(m.work==='No'){def('nec',m.att==='Attending'?'Student':'Dependent');def('seek','No')}}
+  if(m.att==='Attending'&&m.work==='No')def('nec','Student');
+  if(m.mode==='No travel'){def('dist','0');def('tH','0');def('tM','0')}
+  /* education → literacy */
+  if(m.att==='Not Attending'&&m.edu)def('natt','Attended Before');
+  if(AGE7(m)){if(m.edu&&m.edu!=='Pre-primary')def('lit','Literate');if(m.natt==='Never Attended')def('lit','Illiterate')}
+  if(a!==null&&a<4)def('att','Not Attending');
+  if(a!==null&&a<4&&m.att==='Not Attending')def('natt','Never Attended');
+  /* covid */
+  if(hh.covAdults==='Yes'&&a!==null&&a>=15){def('cov','Yes');if(m.cov==='Yes'){def('covP','Within India');def('covState',hh.state);def('covDist',hh.district)}}
+  if(a!==null&&a<12)def('cov','No');
+  /* ID flags from typed numbers */
+  for(const[y,v]of[['aadY','aad'],['mobY','mob'],['voterY','voter'],['passY','pass']])if(!empty(m[v]))def(y,'Yes');
+  if(a!==null&&a<18){def('voterY','No');def('dlY','No')}
+  if(m.passY==='No')delete m.pass;
+  /* fertility zero for last year if no infant */
+  if(FC(m)){const infant=hh.members.some(x=>x.rel!=='Head'&&ageOf(x)===0);if(!infant){def('f33d','0');def('f33s','0')}}
+ }}
+
+/* ================= routing ================= */
+function route(){const p=location.hash.replace(/^#\/?/,'').split('/');return{v:p[0]||'home',a:p[1],b:p[2]}}
+let R=route();
+window.addEventListener('hashchange',()=>{R=route();render();window.scrollTo(0,0)});
+const go=h=>{if(location.hash===h){render()}else location.hash=h};
+const hhById=id=>DB.households.find(x=>x.id===id);
+function objOf(scope){const hh=hhById(R.a);if(!hh)return null;if(scope==='hh')return hh;const id=scope.slice(2);return hh.members.find(m=>m.id===id)}
+function fieldOf(scope,k){return scope==='hh'?(HF.find(f=>f.k===k)||HD.find(f=>f.k===k)):FK[k]}
+
+/* ================= field rendering ================= */
+function fieldHTML(f,o,scope,extraCls){
+ const v=o[f.k];const t=f.t||'text';const auto=o._a&&o._a[f.k];
+ const miss=scope==='hh'?(f.req!==0&&empty(v)):isPending(f,o);
+ let inner;
+ if(t==='chips'||t==='multi'){
+  inner='<div class="chips">'+f.o.map(([val,hi])=>{const on=t==='multi'?(v||[]).includes(val):v===val;
+   return`<button type="button" class="chip${on?' on':''}${on&&auto?' auto':''}" data-scope="${scope}" data-k="${f.k}" data-v="${esc(val)}">${esc(val)}${hi&&hi!==val?`<small>${esc(hi)}</small>`:''}</button>`}).join('')+'</div>';
+ }else{
+  const numeric=t==='num'||f.num||t==='date';
+  inner=`<div class="inp"><input class="tx${auto?' auto':''}" data-scope="${scope}" data-k="${f.k}" value="${esc(v)}"${numeric?' inputmode="numeric"':''}${t==='date'?' placeholder="DD-MM-YYYY" maxlength="10"':''}${f.max?` maxlength="${f.max}"`:''}${f.dl?` list="dl-${f.dl}"`:''} autocomplete="off" autocapitalize="${f.up?'characters':'words'}">${t==='num'?'':`<button type="button" class="mic" data-scope="${scope}" data-mic="${f.k}" title="बोलकर भरें">🎤</button>`}</div>`;
+ }
+ return`<div class="f${miss?' miss':''}${f.wide||t==='chips'||t==='multi'?' wide':''}${extraCls?' '+extraCls:''}" data-fid="${scope}|${f.k}"><label class="lb">${f.q?`<span class="q">${f.q}</span> `:''}${esc(f.l)} <span class="hi">· ${esc(f.h)}</span></label>${inner}${warnFor(f,o)}</div>`}
+function fieldsHTML(list,o,scope){return'<div class="grid2">'+list.filter(f=>vis(f,o)).map(f=>fieldHTML(f,o,scope)).join('')+'</div>'}
+const relLabel=r=>{const x=REL.find(y=>y[0]===r);return x?x[1]:'संबंध?'};
+function mHead(m,hh,extra){const a=ageOf(m);const p=pendingOf(m).length;
+ return`<div class="mhead"><div class="av">${esc((m.name||'?').trim().charAt(0).toUpperCase()||'?')}</div><div class="grow"><div class="nm">${esc(m.name||'(नाम बाकी)')}</div><div class="sub">${esc(relLabel(m.rel))}${m.sex?' · '+(m.sex==='Male'?'पुरुष':m.sex==='Female'?'स्त्री':'ट्रांसजेंडर'):''}${a!==null?' · '+a+' वर्ष':''}</div></div>${extra||''}<span class="badge${p?'':' ok'}">${p?p+' बाकी':'✓ पूरा'}</span></div>`}
+
+/* ================= views ================= */
+function render(){
+ const hh=hhById(R.a);
+ $('#vl').textContent='🎤 '+(DB.settings.voiceLang==='hi-IN'?'हिं':'EN');
+ if(hh)smart(hh);
+ $('#dl-members').innerHTML=hh?hh.members.filter(m=>m.name).map(m=>`<option>${esc(m.name)}</option>`).join(''):'';
+ if(R.v==='hh'&&hh)return viewHH(hh,+R.b||0);
+ if(R.v==='m'&&hh)return viewMember(hh,R.b);
+ if(R.v==='p'&&hh)return viewPortal(hh,R.b);
+ return viewHome()}
+function bb(html){$('#bb').innerHTML=html?`<div class="bottombar">${html}</div>`:''}
+
+function viewHome(){
+ const H=DB.households.slice().sort((a,b)=>(b.updated||0)-(a.updated||0));
+ const mem=H.reduce((a,h)=>a+h.members.length,0),pend=H.reduce((a,h)=>a+hhPending(h),0);
+ const lb=DB.settings.lastBackup;const stale=!lb||Date.now()-lb>6*3600e3;
+ app.innerHTML=`
+ <div class="card"><div class="stats"><div class="stat"><b>${H.length}</b><span>परिवार</span></div><div class="stat"><b>${mem}</b><span>सदस्य</span></div><div class="stat"><b style="color:${pend?'var(--r)':'var(--g)'}">${pend}</b><span>बाकी जवाब</span></div></div></div>
+ <div class="card"><div class="row" style="margin-bottom:10px"><button class="btn primary" data-act="newhh" style="flex:1">+ नया परिवार / New household</button></div>
+ <input class="tx" id="q" placeholder="🔍 खोजें — मुखिया का नाम / मकान नं." autocomplete="off">
+ <div id="list" style="margin-top:6px">${H.length?'':'<p class="note">अभी कोई परिवार नहीं। ऊपर "+ नया परिवार" दबाएँ।</p>'}${H.map(h=>{const head=h.members.find(m=>m.rel==='Head')||h.members[0];const p=hhPending(h);
+  return`<div class="item" data-act="openhh" data-id="${h.id}" data-s="${esc(((head&&head.name)||'')+' '+(h.houseNo||'')+' '+(h.hhNo||'')).toLowerCase()}"><div class="av">${h.members.length}</div><div class="grow"><div class="nm">${esc((head&&head.name)||'(मुखिया का नाम बाकी)')}</div><div class="sub">मकान ${esc(h.houseNo||'—')} · परिवार ${esc(h.hhNo||'—')} · ${esc(stLabel(h.status))}</div></div><span class="badge${p?'':' ok'}">${p?p+' बाकी':'✓'}</span></div>`}).join('')}</div></div>
+ <div class="card${stale&&H.length?' tip':''}"><h3>💾 बैकअप / Laptop पर ले जाना</h3>
+ <p class="note">${lb?'आखिरी बैकअप: '+new Date(lb).toLocaleString('en-IN'):'अभी तक कोई बैकअप नहीं।'} ${stale&&H.length?'<b style="color:var(--r)">रोज़ शाम बैकअप ज़रूर लें।</b>':''}</p>
+ <div class="row"><button class="btn green" data-act="backup">⬇ बैकअप फ़ाइल बनाएँ</button><label class="btn ghost">⬆ बैकअप फ़ाइल खोलें<input type="file" id="imp" accept=".json,application/json" hidden></label></div>
+ <p class="note" style="margin-top:8px">फ़ोन से laptop पर: बैकअप फ़ाइल USB केबल / Bluetooth / Nearby Share से भेजें, फिर laptop पर यही ऐप खोलकर "बैकअप फ़ाइल खोलें" दबाएँ।</p></div>
+ <div class="card tip"><h3>🔒 गोपनीयता</h3><p class="note">सारा डेटा सिर्फ़ इसी फ़ोन/लैपटॉप के ब्राउज़र में रहता है — कहीं अपलोड नहीं होता। जनगणना की जानकारी गोपनीय है: बैकअप फ़ाइल WhatsApp या किसी और को न भेजें। ऑनलाइन सबमिट होने के बाद उस परिवार को यहाँ से मिटा दें।</p>
+ <div class="row"><button class="btn red sm" data-act="wipe" data-confirm="1">सारा डेटा मिटाएँ</button></div></div>
+ <p class="note" style="text-align:center;margin:4px 0 12px">जनगणना सहायक — विकसित: <b>साक्षी</b> · Developed by <b>Sakshi</b></p>
+ <div class="card"><h3>🎤 बोलकर भरना</h3><p class="note">हर खाने के आगे 🎤 दबाकर बोलें। इंटरनेट न हो तो फ़ोन के कीबोर्ड (Gboard) का 🎤 इस्तेमाल करें — Gboard की Settings → Voice typing → Offline speech recognition में Hindi/English डाउनलोड कर लें, फिर वह बिना नेट चलता है। ऊपर "🎤 EN/हिं" से भाषा बदलें — नाम portal में अंग्रेज़ी में जाते हैं, इसलिए EN रखें।</p></div>`;
+ bb('');
+ const q=$('#q');q.addEventListener('input',()=>{const s=q.value.toLowerCase();document.querySelectorAll('#list .item').forEach(e=>e.style.display=e.dataset.s.includes(s)?'':'none')});
+ $('#imp').addEventListener('change',importFile)}
+const stLabel=s=>{const x=STATUS.find(y=>y[0]===s);return x?x[1]:'डेटा लिया'};
+
+const QUICK=[['Head','Male','मुखिया (पुरुष)'],['Head','Female','मुखिया (महिला)'],['Wife/Husband','Female','पत्नी'],['Wife/Husband','Male','पति'],['Son/Daughter','Male','बेटा'],['Son/Daughter','Female','बेटी'],['Son-in-law/Daughter-in-law','Female','बहू'],['Grandchild','Male','पोता/नाती'],['Grandchild','Female','पोती/नातिन'],['Father/Mother','Female','माँ'],['Father/Mother','Male','पिता'],['Brother/Sister','Male','भाई'],['Brother/Sister','Female','बहन'],['','','अन्य']];
+function viewHH(hh,ri){
+ const r=ROUNDS[ri]||ROUNDS[0];
+ const tabs=`<div class="tabs">${ROUNDS.map((x,i)=>{const p=roundPending(hh,x);return`<a href="#/hh/${hh.id}/${i}" class="${i===ri?'cur':''}">${x.t}<span class="dot${p?'':' ok'}">${p||'✓'}</span></a>`}).join('')}</div>`;
+ let body=`<div class="card"><h3>${r.t} <span class="sub">${esc(r.e)}</span></h3><p class="note">हल्के नारंगी (डैश वाले) <span class="legend"></span> जवाब ऐप ने अपने आप भरे हैं — बस पूछकर पुष्टि करें, गलत हो तो बदल दें। लाल ● = जवाब बाकी।</p></div>`;
+ if(r.roster){
+  body+=`<div class="card"><h3>🏠 मकान व परिवार पहचान</h3>${fieldsHTML(HF,hh,'hh')}<div class="f wide"><label class="lb">स्थिति · Status</label><div class="chips">${STATUS.map(([v,h])=>`<button class="chip${hh.status===v?' on':''}" data-scope="hh" data-k="status" data-v="${v}">${h}<small>${v}</small></button>`).join('')}</div></div></div>`;
+  body+=hh.members.map(m=>`<div class="card" id="c-${m.id}">${mHead(m,hh,`<a class="btn sm ghost" href="#/m/${hh.id}/${m.id}">पूरा फॉर्म</a>`)}${fieldsHTML(r.keys.map(k=>FK[k]),m,'m:'+m.id)}<div class="row"><button class="btn red sm" data-act="delm" data-id="${m.id}" data-confirm="1">सदस्य हटाएँ</button></div></div>`).join('');
+  body+=`<div class="card"><h3>+ सदस्य जोड़ें <span class="sub">एक टैप में संबंध व लिंग भर जाएगा</span></h3><div class="quick">${QUICK.map(([rel,sex,lab])=>`<button class="btn sm ${rel?'ghost':''}" data-act="addm" data-rel="${rel}" data-sex="${sex}">+ ${lab}</button>`).join('')}</div></div>`;
+ }else if(r.family){
+  body+=`<div class="card"><h3>👨‍👩‍👧 पूरे परिवार के लिए एक बार पूछें</h3><p class="note">यहाँ भरा जवाब सब सदस्यों में अपने आप चला जाएगा। किसी एक का अलग हो तो उसके "पूरा फॉर्म" में बदल दें।</p>${fieldsHTML(HD,hh,'hh')}</div>`;
+  if(hh.disNone!=='Yes')body+=hh.members.map(m=>`<div class="card">${mHead(m,hh)}${fieldsHTML(r.keys.map(k=>FK[k]),m,'m:'+m.id)}</div>`).join('');
+ }else if(r.pending){
+  const list=hh.members.map(m=>({m,p:pendingOf(m)})).filter(x=>x.p.length);
+  body+=list.length?list.map(({m,p})=>`<div class="card">${mHead(m,hh,`<a class="btn sm ghost" href="#/m/${hh.id}/${m.id}">पूरा फॉर्म</a>`)}<div class="grid2">${p.map(f=>fieldHTML(f,m,'m:'+m.id)).join('')}</div></div>`).join('')
+   :`<div class="card"><h3>✅ इस परिवार का सब भर गया</h3><p class="note">अब घर पर laptop में "Portal में भरें" खोलकर एक-एक सदस्य का डेटा portal में चढ़ाएँ। चाहें तो प्रिंट निकालकर मुखिया से हस्ताक्षर लें।</p></div>`;
+ }else{
+  const shown=hh.members.filter(m=>F.some(f=>r.keys.includes(f.k)&&vis(f,m)));
+  const skip=hh.members.filter(m=>!shown.includes(m));
+  body+=shown.map(m=>`<div class="card">${mHead(m,hh)}${fieldsHTML(r.keys.map(k=>FK[k]),m,'m:'+m.id)}</div>`).join('');
+  if(skip.length)body+=`<div class="card"><p class="note">इनके लिए यह भाग लागू नहीं: ${skip.map(m=>esc(m.name||'?')).join(', ')}</p></div>`;
+  if(!hh.members.length)body+='<div class="card"><p class="note">पहले "1. कौन किसका" में सदस्य जोड़ें।</p></div>';
+ }
+ body+=`<div class="card"><div class="row"><a class="btn primary" href="#/p/${hh.id}">💻 Portal में भरें (laptop)</a><button class="btn ghost" data-act="printforms">🖨 भरा हुआ फॉर्म — PDF/प्रिंट</button><button class="btn ghost" data-act="print">📋 सार तालिका</button><button class="btn red" data-act="delhh" data-confirm="1">परिवार मिटाएँ</button></div></div>`;
+ app.innerHTML=tabs+body;
+ bb(`<a class="btn ghost" href="#/">🏠 सूची</a>${ri>0?`<a class="btn ghost" href="#/hh/${hh.id}/${ri-1}">← पिछला</a>`:''}${ri<ROUNDS.length-1?`<a class="btn primary" href="#/hh/${hh.id}/${ri+1}">अगला →</a>`:''}`)}
+
+function viewMember(hh,mid){
+ const m=hh.members.find(x=>x.id===mid);if(!m){go('#/hh/'+hh.id);return}
+ const sc='m:'+m.id;
+ let h=`<div class="tabs">${STEPS.map((s,i)=>{const p=pendingOf(m,F.filter(f=>f.s===i).map(f=>f.k)).length;return`<a href="javascript:void 0" data-act="jump" data-s="${i}">${i?i+'. ':''}${s[0]}<span class="dot${p?'':' ok'}">${p||'✓'}</span></a>`}).join('')}</div>`;
+ h+=`<div class="card">${mHead(m,hh)}<p class="note">पूरा फॉर्म — portal के क्रम में (8 चरण)।</p></div>`;
+ STEPS.forEach((s,i)=>{const fl=F.filter(f=>f.s===i);const v=fl.filter(f=>vis(f,m));
+  h+=`<div class="card" id="s-${i}"><h3><span class="av" style="width:24px;height:24px;flex-basis:24px;font-size:12px">${i||'★'}</span>${s[0]} <span class="sub">${s[1]}</span></h3>${v.length?fieldsHTML(fl,m,sc):'<p class="note">इस सदस्य के लिए लागू नहीं।</p>'}</div>`});
+ const idx=hh.members.indexOf(m);
+ app.innerHTML=h;
+ bb(`<a class="btn ghost" href="#/hh/${hh.id}/0">← परिवार</a>${idx<hh.members.length-1?`<a class="btn primary" href="#/m/${hh.id}/${hh.members[idx+1].id}">अगला सदस्य →</a>`:''}`)}
+
+/* -------- portal-entry (laptop) view -------- */
+function dispVal(f,m,hh){let v=m[f.k];if(Array.isArray(v))v=v.join(', ');return v}
+function portalRows(m,hh,s){
+ const rows=[];
+ for(const f of F.filter(f=>f.s===s&&f.portal!==0)){
+  if(!vis(f,m))continue;
+  if(NEEDY[f.k]&&m[NEEDY[f.k]]!=='Yes')continue;
+  let v=dispVal(f,m,hh);
+  if((f.k==='fName'||f.k==='mName')&&m[f.k[0]+'Mem']==='Yes'){const p=hh.members.find(x=>x.name===v);rows.push([f.q,f.l+' — tick "member" & select',v]);if(p&&p.dob)rows.push([f.q.replace('a','b'),'DOB (auto from member)',p.dob]);continue}
+  if(f.k==='age'&&dobOk(m.dob))continue;
+  rows.push([f.q||'',f.l,v])}
+ if(s===0&&dobOk(m.dob))rows.splice(4,0,['4b','Age (auto)',String(ageFromDob(m.dob))]);
+ return rows}
+function viewPortal(hh,mid){
+ const m=hh.members.find(x=>x.id===mid)||hh.members[0];
+ if(!m){app.innerHTML='<div class="card"><p class="note">कोई सदस्य नहीं।</p></div>';bb(`<a class="btn ghost" href="#/hh/${hh.id}/0">← परिवार</a>`);return}
+ m.done=m.done||{};
+ let h=`<div class="card"><h3>💻 Portal में भरें <span class="sub">मकान ${esc(hh.houseNo||'—')} · OTP मोबाइल: <b>${esc(hh.loginMob||'—')}</b></span></h3><p class="note">बायीं तरफ़ portal, दायीं तरफ़ यह पेज रखें (Windows: <b>Win + ←/→</b>)। किसी भी जवाब पर क्लिक करते ही वह कॉपी हो जाएगा — portal के खाने में <b>Ctrl+V</b> करें। Dropdown वाले जवाब portal में खोजकर चुनें।</p>
+ <div class="tabs" style="position:static">${hh.members.map(x=>{const n=Object.values(x.done||{}).filter(Boolean).length;return`<a href="#/p/${hh.id}/${x.id}" class="${x===m?'cur':''}">${esc(x.name||'?')}<span class="dot${n>=9?' ok':''}">${n}/9</span></a>`}).join('')}</div></div>`;
+ const pend=pendingOf(m);
+ if(pend.length)h+=`<div class="card tip"><p class="note">⚠ इस सदस्य के ${pend.length} जवाब बाकी हैं: ${pend.map(f=>esc((f.q?f.q+' ':'')+f.l)).join('; ')}</p></div>`;
+ STEPS.forEach((s,i)=>{const rows=portalRows(m,hh,i);
+  h+=`<div class="card pv"><h3><span class="av" style="width:24px;height:24px;flex-basis:24px;font-size:12px">${i||'+'}</span>${i?'Step '+i+': ':''}${s[1]} <span class="sub">${s[0]}</span><span class="grow"></span><button class="btn sm ${m.done[i]?'green':'ghost'}" data-act="stepdone" data-id="${m.id}" data-s="${i}">${m.done[i]?'✓ भर दिया':'भरा? ✓'}</button></h3>
+  ${rows.length?rows.map(([q,l,v])=>`<div class="r"><span class="q">${esc(q)}</span><span>${esc(l)}</span>${empty(v)?'<span class="v na">— खाली —</span>':`<span class="v" data-copy="${esc(v)}">${esc(v)}</span>`}</div>`).join(''):'<p class="note">लागू नहीं — portal में यह चरण अपने आप बंद/खाली रहेगा, सीधे Save & Continue।</p>'}</div>`});
+ const idx=hh.members.indexOf(m);
+ h+=`<div class="card"><div class="row"><button class="btn green" data-act="markentered">✓ इस परिवार को "ऑनलाइन भरा" मार्क करें</button></div></div>`;
+ app.innerHTML=h;
+ bb(`<a class="btn ghost" href="#/hh/${hh.id}/0">← परिवार</a>${idx<hh.members.length-1?`<a class="btn primary" href="#/p/${hh.id}/${hh.members[idx+1].id}">अगला सदस्य →</a>`:''}`)}
+
+/* -------- print: filled form per member (like the paper schedule) -------- */
+function hiOf(f,v){if(!f.o)return'';const vals=Array.isArray(v)?v:[v];return vals.map(x=>{const o=f.o.find(y=>y[0]===x);return o&&o[1]!==x?o[1]:''}).filter(Boolean).join(', ')}
+function printForms(hh){
+ const meta=[['राज्य',hh.state],['जिला',hh.district],['गाँव/नगर',hh.town],['वार्ड',hh.ward],['गणना ब्लॉक',hh.eb],['मकान संख्या',hh.houseNo],['भवन संख्या',hh.bldgNo],['परिवार क्रमांक',hh.hhNo],['परिवार का प्रकार',hh.hhType],['पता',hh.address]];
+ const headM=hh.members.find(m=>m.rel==='Head');
+ $('#print').innerHTML=hh.members.map((m,i)=>{
+  const rows=[];
+  for(const f of F){if(f.portal===0||!vis(f,m))continue;if(NEEDY[f.k]&&m[NEEDY[f.k]]!=='Yes')continue;
+   let v=m[f.k];if(f.k==='age'&&dobOk(m.dob))continue;if(f.k==='dob'&&dobOk(v))v=v+'   (आयु '+ageFromDob(v)+' वर्ष)';
+   const val=Array.isArray(v)?v.join(', '):(v??'');const hi=hiOf(f,v);
+   rows.push(`<tr><td class="qn">${f.q||''}</td><td>${esc(f.h)}<div class="en">${esc(f.l)}</div></td><td class="ans">${empty(val)?'<span style="color:#999">........</span>':esc(val)+(hi?`<div class="en">${esc(hi)}</div>`:'')}</td></tr>`)}
+  return`<div class="pg"><h2>भारत की जनगणना 2027 : परिवार अनुसूची — सदस्य ${i+1} / ${hh.members.length}</h2>
+  <div class="meta">${meta.map(([a,b])=>`<span><b>${a}:</b> ${esc(b||'........')}</span>`).join('')}</div>
+  <div class="who">${esc(m.name||'')} <small>· ${esc(relLabel(m.rel))} · ${m.rel==='Head'?'':'मुखिया: '+esc(headM&&headM.name||'')}</small></div>
+  <table><tr><th style="width:38px">क्र.</th><th>प्रश्न</th><th style="width:42%">उत्तर</th></tr>${rows.join('')}</table>
+  <div class="sig"><span>उत्तरदाता / मुखिया के हस्ताक्षर: ______________________</span><span>प्रगणक के हस्ताक्षर व दिनांक: ______________________</span></div></div>`}).join('');
+ document.body.classList.add('printing','pforms');setTimeout(()=>{window.print()},60)}
+window.addEventListener('afterprint',()=>document.body.classList.remove('pforms'));
+/* -------- print: one summary table for whole family -------- */
+function printHH(hh){
+ const ms=hh.members;const chunks=[];for(let i=0;i<ms.length;i+=6)chunks.push(ms.slice(i,i+6));if(!chunks.length)chunks.push([]);
+ const head=ms.find(m=>m.rel==='Head');
+ const meta=`राज्य: ${esc(hh.state||'')} · जिला: ${esc(hh.district||'')} · गाँव/नगर: ${esc(hh.town||'')} · वार्ड: ${esc(hh.ward||'')} · EB: ${esc(hh.eb||'')} · मकान: ${esc(hh.houseNo||'')} · भवन: ${esc(hh.bldgNo||'')} · परिवार क्र.: ${esc(hh.hhNo||'')} · प्रकार: ${esc(hh.hhType||'')} · पता: ${esc(hh.address||'')}`;
+ $('#print').innerHTML=chunks.map((c,ci)=>`<h2>भारत की जनगणना 2027 — परिवार अनुसूची (सहायक प्रति) · मुखिया: ${esc(head&&head.name||'')} ${chunks.length>1?`(भाग ${ci+1}/${chunks.length})`:''}</h2><div class="meta">${meta}</div>
+ <table><tr><th style="width:34px">प्र.</th><th style="width:210px">प्रश्न</th>${c.map((m,j)=>`<th>${ci*6+j+1}. ${esc(m.name||'')}</th>`).join('')}</tr>
+ ${F.filter(f=>f.portal!==0&&c.some(m=>vis(f,m))).map(f=>`<tr><td>${f.q||''}</td><td>${esc(f.l)}</td>${c.map(m=>{if(!vis(f,m)||(NEEDY[f.k]&&m[NEEDY[f.k]]!=='Yes'))return'<td style="color:#999">—</td>';let v=m[f.k];if(f.k==='age'&&dobOk(m.dob))v=ageFromDob(m.dob);return`<td>${esc(Array.isArray(v)?v.join(', '):v??'')}</td>`}).join('')}</tr>`).join('')}
+ <tr><td colspan="${2+c.length}" style="height:34px">उत्तरदाता/मुखिया के हस्ताक्षर: ______________________ &nbsp;&nbsp; प्रगणक के हस्ताक्षर व दिनांक: ______________________</td></tr></table>`).join('');
+ document.body.classList.add('printing');setTimeout(()=>{window.print();setTimeout(()=>document.body.classList.remove('printing'),500)},50)}
+window.addEventListener('afterprint',()=>document.body.classList.remove('printing'));
+
+/* ================= state changes ================= */
+function touch(hh){hh.updated=Date.now();smart(hh);save()}
+function setVal(scope,k,v){const hh=hhById(R.a);const o=objOf(scope);if(!o||!hh)return;
+ const old=o[k];
+ if(scope!=='hh'){o._a=o._a||{};o._x=o._x||{};delete o._a[k];if(empty(v)){o._x[k]=1}else delete o._x[k]}
+ if(empty(v))delete o[k];else o[k]=v;
+ if(scope==='hh'&&PROP.includes(k)){for(const m of hh.members){if(!(m._a&&m._a[k])&&m[k]===old&&!empty(old)){if(empty(v))delete m[k];else m[k]=v}}}
+ if(scope!=='hh'&&k==='name'&&!empty(old)){for(const m of hh.members){for(const kk of['spouse','fName','mName'])if(m[kk]===old&&!(m._a&&m._a[kk]))m[kk]=v}}
+ if(scope!=='hh'&&k==='oq'){for(const kk of Object.keys(OQMAP[old]||{}))if(o._a&&o._a[kk])delete o[kk];for(const kk of['work','wst','cat','cls','nec','seek','occ'])delete o._x[kk]}
+ touch(hh)}
+function newMember(hh,rel,sex){const m={id:uid(),_a:{},_x:{}};if(rel)m.rel=rel;else if(!hh.members.length)m.rel='Head';if(sex)m.sex=sex;hh.members.push(m);touch(hh);return m}
+function newHH(){const last=DB.households.slice().sort((a,b)=>(b.updated||0)-(a.updated||0))[0]||{};
+ const hh={id:uid(),created:Date.now(),updated:Date.now(),state:last.state||'Uttar Pradesh',district:last.district||'',town:last.town||'',ward:last.ward||'',eb:last.eb||'',ru:last.ru||'',hhType:'Normal',status:'Collected',mt:'Hindi',members:[]};
+ DB.households.push(hh);save();return hh}
+function rerender(){const a=document.activeElement;const key=a&&a.dataset&&a.dataset.k?[a.dataset.scope,a.dataset.k]:null;const y=window.scrollY;render();window.scrollTo(0,y);
+ if(key){const n=app.querySelector(`input[data-scope="${key[0]}"][data-k="${key[1]}"]`);if(n){n.focus({preventScroll:true});try{const L=n.value.length;n.setSelectionRange(L,L)}catch(e){}}}}
+
+/* ================= events ================= */
+app.addEventListener('input',e=>{const el=e.target;if(!el.dataset||!el.dataset.k||el.type==='file')return;
+ const f=fieldOf(el.dataset.scope,el.dataset.k);let v=el.value;
+ if(f){if(f.t==='date')v=fmtDate(v);else if(f.t==='num')v=v.replace(f.dec?/[^\d.]/g:/\D/g,'');else if(f.num)v=v.replace(/\D/g,'');else if(f.up)v=v.toUpperCase().replace(/\s/g,'');if(f.max)v=v.slice(0,f.max);if(v!==el.value)el.value=v}
+ setVal(el.dataset.scope,el.dataset.k,v.trim()===''?'':v);el.classList.remove('auto')});
+app.addEventListener('change',e=>{const el=e.target;if(el.dataset&&el.dataset.k){const f=fieldOf(el.dataset.scope,el.dataset.k);if(f&&f.cap&&el.value&&/^[a-z ]+$/i.test(el.value)){const v=titleCase(el.value.trim().replace(/\s+/g,' '));el.value=v;setVal(el.dataset.scope,el.dataset.k,v)}setTimeout(rerender,0)}});
+document.addEventListener('click',e=>{
+ const chip=e.target.closest('.chip[data-k]');
+ if(chip){const sc=chip.dataset.scope,k=chip.dataset.k,v=chip.dataset.v;const o=objOf(sc);if(!o)return;const f=fieldOf(sc,k);
+  if(f&&f.t==='multi'){let arr=(o[k]||[]).slice();if(arr.includes(v))arr=arr.filter(x=>x!==v);else{if(arr.length>=(f.max||99)){toast('अधिकतम '+f.max+' चुन सकते हैं');return}arr.push(v)}setVal(sc,k,arr)}
+  else setVal(sc,k,o[k]===v&&!(o._a&&o._a[k])?'':v);
+  rerender();return}
+ const mic=e.target.closest('.mic');if(mic){startMic(mic);return}
+ const cp=e.target.closest('[data-copy]');if(cp){copyText(cp.dataset.copy);return}
+ const b=e.target.closest('[data-act]');if(!b)return;
+ if(b.dataset.confirm&&!armed(b))return;
+ act(b.dataset.act,b)});
+function armed(b){if(b.dataset.armed)return true;b.dataset.armed='1';const t=b.textContent;b.textContent='पक्का? दोबारा दबाएँ';setTimeout(()=>{if(b.isConnected){delete b.dataset.armed;b.textContent=t}},3500);return false}
+function act(a,b){const hh=hhById(R.a);
+ switch(a){
+  case'home':go('#/');break;
+  case'voicelang':DB.settings.voiceLang=DB.settings.voiceLang==='hi-IN'?'en-IN':'hi-IN';save();$('#vl').textContent='🎤 '+(DB.settings.voiceLang==='hi-IN'?'हिं':'EN');toast(DB.settings.voiceLang==='hi-IN'?'बोलने की भाषा: हिंदी':'Voice language: English (India)');break;
+  case'newhh':{const h=newHH();go('#/hh/'+h.id+'/0');break}
+  case'openhh':go('#/hh/'+b.dataset.id+'/0');break;
+  case'addm':{if(!hh)return;const m=newMember(hh,b.dataset.rel,b.dataset.sex);render();const n=app.querySelector(`input[data-scope="m:${m.id}"][data-k="name"]`);if(n){n.scrollIntoView({block:'center'});n.focus()}break}
+  case'delm':{if(!hh)return;hh.members=hh.members.filter(m=>m.id!==b.dataset.id);touch(hh);rerender();toast('सदस्य हटाया');break}
+  case'delhh':{DB.households=DB.households.filter(h=>h!==hh);save();go('#/');toast('परिवार मिटाया');break}
+  case'wipe':DB.households=[];save();render();toast('सारा डेटा मिटा दिया');break;
+  case'print':if(hh)printHH(hh);break;
+  case'printforms':if(hh)printForms(hh);break;
+  case'backup':backup();break;
+  case'jump':{const el=$('#s-'+b.dataset.s);if(el)window.scrollTo({top:el.getBoundingClientRect().top+window.scrollY-110,behavior:'smooth'});break}
+  case'stepdone':{const m=hh&&hh.members.find(x=>x.id===b.dataset.id);if(!m)return;m.done=m.done||{};m.done[b.dataset.s]=!m.done[b.dataset.s];touch(hh);rerender();break}
+  case'markentered':if(hh){hh.status='Entered online';touch(hh);toast('✓ "ऑनलाइन भरा" मार्क किया');rerender()}break;
+ }}
+function copyText(t){const done=()=>toast('📋 कॉपी: '+t);
+ if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(t).then(done,()=>fallbackCopy(t,done));else fallbackCopy(t,done)}
+function fallbackCopy(t,done){const ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done()}catch(e){toast('कॉपी नहीं हुआ')}ta.remove()}
+
+/* ================= voice ================= */
+let rec=null;
+function startMic(btn){
+ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!SR){toast('यहाँ वॉइस नहीं चलेगा — फ़ोन कीबोर्ड (Gboard) का 🎤 दबाएँ');return}
+ if(rec){try{rec.abort()}catch(e){}rec=null;document.querySelectorAll('.mic.rec').forEach(x=>x.classList.remove('rec'));return}
+ const sc=btn.dataset.scope,k=btn.dataset.mic,f=fieldOf(sc,k)||{};
+ const r=new SR();rec=r;
+ r.lang=(f.num||f.t==='date'||f.up)?'en-IN':DB.settings.voiceLang;r.interimResults=false;r.maxAlternatives=1;
+ btn.classList.add('rec');toast('🎤 बोलिए…');
+ r.onresult=e=>{let t=e.results[0][0].transcript.trim();
+  if(f.t==='date'){const d=parseSpokenDate(t);if(!d){toast('तिथि समझ नहीं आई: '+t);return}t=d}
+  else if(f.num){t=wordsToDigits(t);if(f.max)t=t.slice(0,f.max)}
+  else if(f.up){t=t.toUpperCase().replace(/\s/g,'')}
+  else if(f.cap&&/^[a-z .]+$/i.test(t)){t=titleCase(t)}
+  setVal(sc,k,t);rerender();toast('✓ '+t)};
+ r.onerror=e=>toast(e.error==='network'?'वॉइस के लिए नेट चाहिए — बिना नेट Gboard कीबोर्ड का 🎤 दबाएँ':e.error==='not-allowed'?'माइक की अनुमति दें (browser settings)':e.error==='no-speech'?'आवाज़ नहीं आई, फिर से दबाएँ':'वॉइस: '+e.error);
+ r.onend=()=>{btn.classList.remove('rec');rec=null};
+ try{r.start()}catch(e){btn.classList.remove('rec');rec=null;toast('वॉइस शुरू नहीं हुआ')}}
+
+/* ================= backup / import ================= */
+const stamp=()=>{const d=new Date(),p=n=>String(n).padStart(2,'0');return`${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}`};
+async function backup(){
+ if(!DB.households.length){toast('बैकअप के लिए कोई डेटा नहीं');return}
+ const name='janganana-backup-'+stamp()+'.json';
+ const data=JSON.stringify({app:'jg27-helper',ver:1,exported:new Date().toISOString(),households:DB.households});
+ const file=new File([data],name,{type:'application/json'});
+ const mark=()=>{DB.settings.lastBackup=Date.now();save();if(R.v==='home')render()};
+ if(navigator.canShare&&/Android|iPhone|iPad/i.test(navigator.userAgent)){try{if(navigator.canShare({files:[file]})){await navigator.share({files:[file],title:name});mark();toast('✓ बैकअप शेयर किया');return}}catch(e){if(e&&e.name==='AbortError')return}}
+ const a=document.createElement('a');a.href=URL.createObjectURL(file);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);mark();toast('✓ बैकअप डाउनलोड: '+name)}
+function importFile(e){const file=e.target.files[0];if(!file)return;const rd=new FileReader();
+ rd.onload=()=>{try{const d=JSON.parse(rd.result);const list=Array.isArray(d.households)?d.households:null;if(!list)throw 0;let add=0,upd=0;
+  for(const h of list){if(!h||!h.id||!Array.isArray(h.members))continue;const ex=DB.households.findIndex(x=>x.id===h.id);if(ex<0){DB.households.push(h);add++}else if((h.updated||0)>=(DB.households[ex].updated||0)){DB.households[ex]=h;upd++}}
+  save();render();toast(`✓ ${add} नए, ${upd} अपडेट परिवार`)}catch(err){toast('यह सही बैकअप फ़ाइल नहीं है')}};
+ rd.readAsText(file)}
+
+/* ================= offline cache ================= */
+if('serviceWorker' in navigator&&location.protocol==='https:'){try{navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}}
+render();
+</script>
+</body>
+</html>
